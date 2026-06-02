@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Procurement & Logistics System{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    {% if messages %}
+        <div class="toast-container">
+            {% for message in messages %}
+                <div class="toast-msg toast-{{ message.tags }}">
+                    {% if message.tags == 'error' %}<i class="bi bi-exclamation-circle-fill"></i>
+                    {% elif message.tags == 'success' %}<i class="bi bi-check-circle-fill"></i>
+                    {% else %}<i class="bi bi-info-circle-fill"></i>{% endif %}
+                    {{ message }}
+                    <button onclick="this.parentElement.remove()"><i class="bi bi-x"></i></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

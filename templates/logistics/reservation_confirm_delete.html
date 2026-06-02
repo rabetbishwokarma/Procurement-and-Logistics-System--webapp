@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Delete Reservation — VaultDock{% endblock %}
+{% block content %}
+<div class="app-layout">
+
+    {% include 'partials/sidebar.html' %}
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>Delete Reservation</h1>
+                <p>This action cannot be undone</p>
+            </div>
+        </div>
+        <div class="page-body">
+            <div class="form-card" style="max-width:500px;">
+                <div style="text-align:center;padding:1rem 0 1.5rem;">
+                    <div style="width:64px;height:64px;background:var(--red-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.8rem;color:var(--red);">
+                        <i class="bi bi-trash-fill"></i>
+                    </div>
+                    <h2 style="font-size:1.1rem;font-weight:600;color:var(--text-1);margin-bottom:0.5rem;">
+                        Delete Reservation #{{ reservation.pk }}?
+                    </h2>
+                    <p style="color:var(--text-2);font-size:0.875rem;line-height:1.6;">
+                        This will permanently delete the reservation for
+                        <strong>{{ reservation.vendor.vendor_name }}</strong>
+                        at <strong>{{ reservation.dock.dock_name }}</strong>
+                        on <strong>{{ reservation.start_datetime|date:"M d, Y g:i A" }}</strong>.
+                    </p>
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-actions">
+                        <a href="{% url 'logistics:reservation_list' %}" class="btn-ghost">Cancel</a>
+                        <button type="submit" class="btn-danger">
+                            <i class="bi bi-trash-fill"></i> Yes, Delete
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+</script>
+{% endblock %}

@@ -1,0 +1,2340 @@
+﻿=== BASE.HTML ===
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Procurement & Logistics System{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    {% if messages %}
+        <div class="toast-container">
+            {% for message in messages %}
+                <div class="toast-msg toast-{{ message.tags }}">
+                    {% if message.tags == 'error' %}
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                    {% elif message.tags == 'success' %}
+                        <i class="bi bi-check-circle-fill"></i>
+                    {% else %}
+                        <i class="bi bi-info-circle-fill"></i>
+                    {% endif %}
+                    {{ message }}
+                    <button onclick="this.parentElement.remove()">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+
+
+=== LOGIN.HTML ===
+{% extends 'base.html' %}
+{% block title %}Sign In — VaultDock{% endblock %}
+{% block content %}
+<div class="login-page">
+    <div class="login-box">
+        <div class="login-header">
+            <div class="login-app-icon">
+                <i class="bi bi-building-check"></i>
+            </div>
+            <div class="login-app-name">VaultDock</div>
+            <div class="login-tagline">Procurement & Logistics Tools</div>
+        </div>
+        <div class="login-card">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert-error">
+                    <i class="bi bi-exclamation-circle-fill"></i> {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Username</label>
+                    <div class="input-wrap">
+                        <i class="bi bi-person-fill"></i>
+                        <input type="text" name="username"
+                               placeholder="Enter your username" required autofocus>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrap">
+                        <i class="bi bi-lock-fill"></i>
+                        <input type="password" name="password"
+                               placeholder="••••••••" required>
+                    </div>
+                </div>
+                <div class="form-check-wrap">
+                    <input type="checkbox" name="remember_me" id="rememberMe">
+                    <label for="rememberMe">Keep me signed in</label>
+                </div>
+                <button type="submit" class="btn-login">Sign In</button>
+                <div class="login-divider"><span>or</span></div>
+                <div class="login-links">
+                    <a href="#">Forgot password?</a>
+                    <a href="#">Contact support</a>
+                </div>
+            </form>
+        </div>
+        <p class="login-footer-text">
+            VaultDock · Procurement & Logistics Tools<br>
+            © 2026 Logistics Corp. All rights reserved.
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+=== DASHBOARD HOME.HTML ===
+{% extends 'base.html' %}
+{% block title %}Dashboard â€” Procurement & Logistics System{% endblock %}
+{% block content %}
+<div class="app-layout">
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon">
+                <i class="bi bi-building-check"></i>
+            </div>
+            <div>
+                <div class="sidebar-logo-name">VaultDock</div>
+                <div class="sidebar-logo-tag">Procurement & Logistics</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Operations</div>
+            <a href="#" class="nav-item active">
+                <i class="bi bi-squares-fill"></i> Dashboard
+            </a>
+            <a href="#" class="nav-item">
+                <i class="bi bi-calendar2-check-fill"></i> Reservations
+            </a>
+            <a href="#" class="nav-item">
+                <i class="bi bi-truck-front-fill"></i> Deliveries
+            </a>
+            <a href="#" class="nav-item">
+                <i class="bi bi-arrow-up-square-fill"></i> Elevators
+            </a>
+            <a href="#" class="nav-item">
+                <i class="bi bi-p-square-fill"></i> Dock Bays
+            </a>
+            <div class="nav-section-title">Procurement</div>
+            <a href="#" class="nav-item">
+                <i class="bi bi-box-fill"></i> Items
+            </a>
+            <a href="#" class="nav-item">
+                <i class="bi bi-bag-check-fill"></i> Orders
+            </a>
+            <a href="#" class="nav-item">
+                <i class="bi bi-file-earmark-text-fill"></i> Contracts
+            </a>
+            <div class="nav-section-title">Directory</div>
+            <a href="#" class="nav-item">
+                <i class="bi bi-shop-window"></i> Vendors
+            </a>
+            <a href="#" class="nav-item">
+                <i class="bi bi-gear-wide-connected"></i> Manufacturers
+            </a>
+            <div class="nav-section-title">Analytics</div>
+            <a href="#" class="nav-item">
+                <i class="bi bi-bar-chart-fill"></i> Reports
+            </a>
+            <a href="{% url 'admin:index' %}" class="nav-item">
+                <i class="bi bi-shield-lock-fill"></i> Admin
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-pill">
+                <div class="user-avatar">{{ request.user.username|first|upper }}</div>
+                <div>
+                    <div class="user-name">{{ request.user.username }}</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+            </div>
+            <a href="{% url 'accounts:logout' %}" class="logout-btn">
+                <i class="bi bi-box-arrow-left"></i> Sign out
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <!-- Topbar -->
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>Loading Dock & Elevator Management System</h1>
+                <p>Procurement & Logistics System Â· VaultDock</p>
+            </div>
+            <div class="topbar-actions">
+                <a href="#" class="btn-ghost">
+                    <i class="bi bi-bell-fill"></i>
+                    Alerts <span class="badge-count">{{ open_alerts }}</span>
+                </a>
+                <a href="#" class="btn-primary">
+                    <i class="bi bi-plus-lg"></i> New Reservation
+                </a>
+            </div>
+        </div>
+
+        <div class="page-body">
+
+            <!-- Stat Cards â€” 5 cards matching professor's layout -->
+            <div class="stats-grid-5">
+                <div class="stat-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon blue">
+                            <i class="bi bi-calendar2-check-fill"></i>
+                        </div>
+                        <span class="stat-pill blue">Today</span>
+                    </div>
+                    <div class="stat-number">{{ total_reservations }}</div>
+                    <div class="stat-label">Today's Reservations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon teal">
+                            <i class="bi bi-truck-front-fill"></i>
+                        </div>
+                        <span class="stat-pill amber">Pending</span>
+                    </div>
+                    <div class="stat-number">{{ pending_deliveries }}</div>
+                    <div class="stat-label">Pending Deliveries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon green">
+                            <i class="bi bi-arrow-up-square-fill"></i>
+                        </div>
+                        <span class="stat-pill green">Active</span>
+                    </div>
+                    <div class="stat-number">{{ elevator_schedules }}</div>
+                    <div class="stat-label">Elevator Schedules</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon red">
+                            <i class="bi bi-exclamation-octagon-fill"></i>
+                        </div>
+                        <span class="stat-pill red">Open</span>
+                    </div>
+                    <div class="stat-number">{{ open_alerts }}</div>
+                    <div class="stat-label">Alerts</div>
+                </div>
+                <!-- 5th card â€” system status icon card -->
+                <div class="stat-card stat-card-icon-only">
+                    <div class="system-status-icons">
+                        <div class="sys-icon-wrap amber">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+                        <div class="sys-icon-wrap blue">
+                            <i class="bi bi-building-fill"></i>
+                        </div>
+                    </div>
+                    <div class="stat-label" style="text-align:center; margin-top:8px;">System Status</div>
+                </div>
+            </div>
+
+            <!-- Main content grid -->
+            <div class="content-grid">
+
+                <!-- Left: Schedule table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="bi bi-calendar3"></i> Today's Schedule</h3>
+                        <span class="card-badge">{{ todays_schedule|length }} entries</span>
+                    </div>
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Dock</th>
+                                <th>Elevator</th>
+                                <th>Vendor</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in todays_schedule %}
+                            <tr>
+                                <td>
+                                    <span class="time-cell">
+                                        {{ r.start_datetime|time:"g:i A" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="dock-cell">{{ r.dock.dock_name }}</span>
+                                </td>
+                                <td>
+                                    <span class="elevator-cell">
+                                        {% with r.elevatorschedule_set.first as es %}
+                                            {% if es %}
+                                                <i class="bi bi-arrow-up-square-fill" style="color:var(--teal);font-size:0.85rem;"></i>
+                                                {{ es.elevator.elevator_name }}
+                                            {% else %}
+                                                <span style="color:var(--text-3);">â€”</span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="vendor-cell">{{ r.vendor.vendor_name }}</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge {{ r.status|lower }}">
+                                        {{ r.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" style="text-align:center;color:var(--text-3);padding:3rem 1rem;">
+                                    <i class="bi bi-calendar-x" style="font-size:2rem;display:block;margin-bottom:10px;"></i>
+                                    No reservations scheduled for today
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <!-- Bottom action buttons â€” professor's layout -->
+                    <div class="action-buttons-bar">
+                        <div class="action-btn-left">
+                            <a href="#" class="dash-action-btn blue">
+                                <i class="bi bi-plus-circle-fill"></i>
+                                <span>New Reservation</span>
+                            </a>
+                            <a href="#" class="dash-action-btn blue">
+                                <i class="bi bi-truck-front-fill"></i>
+                                <span>Schedule Delivery</span>
+                            </a>
+                        </div>
+                        <div class="action-btn-center">
+                            <a href="#" class="dash-action-btn-tall blue">
+                                <i class="bi bi-arrow-up-square-fill"></i>
+                                <span>Elevator Scheduler</span>
+                            </a>
+                        </div>
+                        <div class="action-btn-right">
+                            <a href="#" class="dash-action-btn blue">
+                                <i class="bi bi-calendar2-week-fill"></i>
+                                <span>View Calendar</span>
+                            </a>
+                            <a href="#" class="dash-action-btn blue">
+                                <i class="bi bi-bar-chart-fill"></i>
+                                <span>Reports</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right panel -->
+                <div class="right-panel">
+                    <!-- Resource Overview -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="bi bi-activity"></i> Resource Overview</h3>
+                        </div>
+                        <div class="resource-grid">
+                            <div class="resource-item r-blue">
+                                <div class="resource-icon blue">
+                                    <i class="bi bi-person-badge-fill"></i>
+                                </div>
+                                <div class="res-num">12</div>
+                                <div class="res-lbl">Staff on Duty</div>
+                            </div>
+                            <div class="resource-item r-teal">
+                                <div class="resource-icon teal">
+                                    <i class="bi bi-arrow-up-square-fill"></i>
+                                </div>
+                                <div class="res-num">3</div>
+                                <div class="res-lbl">Active Elevators</div>
+                            </div>
+                            <div class="resource-item r-green">
+                                <div class="resource-icon green">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                </div>
+                                <div class="res-num">4</div>
+                                <div class="res-lbl">Docks Open</div>
+                            </div>
+                            <div class="resource-item r-purple">
+                                <div class="resource-icon purple">
+                                    <i class="bi bi-truck-flatbed"></i>
+                                </div>
+                                <div class="res-num">2</div>
+                                <div class="res-lbl">Forklifts Ready</div>
+                            </div>
+                        </div>
+
+                    <!-- Alerts -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="bi bi-bell-fill"></i> Alerts</h3>
+                            <span class="card-badge">{{ open_alerts }}</span>
+                        </div>
+                        <div class="alert-list">
+                            {% for alert in alerts %}
+                            <div class="alert-row">
+                                <div class="alert-icon-wrap {% if alert.alert_type == 'Elevator Overlap' or alert.alert_type == 'Dock Overbooked' %}danger{% else %}warn{% endif %}">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                </div>
+                                <div>
+                                    <div class="alert-text">{{ alert.description }}</div>
+                                    <div class="alert-sub">{{ alert.alert_type }}</div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div style="padding:1.5rem;text-align:center;color:var(--text-3);">
+                                <i class="bi bi-check-circle-fill" style="font-size:1.5rem;color:var(--green);display:block;margin-bottom:8px;"></i>
+                                All clear â€” no alerts
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+=== STYLE.CSS ===
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --sidebar-bg: #1c1c1e;
+    --sidebar-border: rgba(255,255,255,0.08);
+    --sidebar-text: #ebebf5cc;
+    --sidebar-muted: rgba(235,235,245,0.3);
+    --sidebar-active-bg: rgba(255,255,255,0.1);
+    --sidebar-active-text: #ffffff;
+    --sidebar-hover: rgba(255,255,255,0.06);
+    --sidebar-w: 240px;
+
+    --main-bg: #f5f5f7;
+    --main-bg-2: #ffffff;
+    --main-border: rgba(0,0,0,0.08);
+    --main-border-2: rgba(0,0,0,0.12);
+    --text-1: #1d1d1f;
+    --text-2: #6e6e73;
+    --text-3: #aeaeb2;
+
+    --blue: #0071e3;
+    --blue-light: #e8f1fb;
+    --blue-dark: #0064cc;
+    --teal: #00b4d8;
+    --teal-light: #e0f7fc;
+    --green: #34c759;
+    --green-light: #e8f8ec;
+    --amber: #ff9f0a;
+    --amber-light: #fff3e0;
+    --red: #ff3b30;
+    --red-light: #ffeeee;
+    --purple: #bf5af2;
+    --purple-light: #f5eeff;
+
+    --radius: 16px;
+    --radius-sm: 10px;
+    --radius-xs: 7px;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+}
+
+body {
+    font-family: var(--font);
+    background: var(--main-bg);
+    color: var(--text-1);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ═══════════════════════════════════
+   LOGIN PAGE — Apple / Facebook style
+═══════════════════════════════════ */
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f7;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-page::before {
+    content: '';
+    position: absolute;
+    width: 800px; height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,113,227,0.06) 0%, transparent 65%);
+    top: -300px; left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.login-page::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(52,199,89,0.05) 0%, transparent 65%);
+    bottom: -100px; right: 10%;
+    pointer-events: none;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    z-index: 1;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-app-icon {
+    width: 72px; height: 72px;
+    background: linear-gradient(145deg, #0a84ff, #0071e3);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-size: 1.8rem;
+    color: white;
+    box-shadow: 0 8px 24px rgba(0,113,227,0.3), 0 2px 6px rgba(0,113,227,0.2);
+}
+
+.login-app-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.03em;
+    margin-bottom: 4px;
+}
+
+.login-tagline {
+    font-size: 0.875rem;
+    color: var(--text-2);
+    font-weight: 400;
+}
+
+.login-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--main-border);
+}
+
+.login-card .form-group {
+    margin-bottom: 0.875rem;
+}
+
+.login-card .form-group label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-2);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.input-wrap { position: relative; }
+
+.input-wrap i {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-3);
+    font-size: 1rem;
+    pointer-events: none;
+    transition: color 0.2s;
+}
+
+.input-wrap:focus-within i { color: var(--blue); }
+
+.input-wrap input {
+    width: 100%;
+    padding: 12px 13px 12px 40px;
+    background: #f5f5f7;
+    border: 1.5px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--text-1);
+    font-size: 0.9rem;
+    font-family: var(--font);
+    transition: all 0.2s;
+    outline: none;
+}
+
+.input-wrap input::placeholder { color: var(--text-3); }
+
+.input-wrap input:focus {
+    background: white;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(0,113,227,0.12);
+}
+
+.form-check-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 1rem 0 1.25rem;
+}
+
+.form-check-wrap input[type="checkbox"] {
+    width: 16px; height: 16px;
+    accent-color: var(--blue);
+    cursor: pointer;
+}
+
+.form-check-wrap label {
+    font-size: 0.85rem;
+    color: var(--text-2);
+    cursor: pointer;
+}
+
+.btn-login {
+    width: 100%;
+    padding: 13px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.93rem;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,113,227,0.3);
+}
+
+.btn-login:hover {
+    background: var(--blue-dark);
+    box-shadow: 0 4px 14px rgba(0,113,227,0.35);
+    transform: translateY(-1px);
+}
+
+.btn-login:active { transform: translateY(0); }
+
+.login-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 1.25rem 0;
+}
+
+.login-divider::before,
+.login-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--main-border);
+}
+
+.login-divider span {
+    font-size: 0.75rem;
+    color: var(--text-3);
+}
+
+.login-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.login-links a {
+    color: var(--blue);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.login-links a:hover { opacity: 0.7; }
+
+.login-footer-text {
+    font-size: 0.72rem;
+    color: var(--text-3);
+    text-align: center;
+    margin-top: 1.5rem;
+    line-height: 1.6;
+}
+
+.alert-error {
+    background: #fff2f2;
+    border: 1px solid rgba(255,59,48,0.2);
+    border-radius: var(--radius-xs);
+    padding: 10px 13px;
+    color: var(--red);
+    font-size: 0.84rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ═══════════════════════════════════
+   APP LAYOUT
+═══════════════════════════════════ */
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ── Sidebar (macOS dark) ── */
+.sidebar {
+    width: var(--sidebar-w);
+    background: var(--sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    z-index: 100;
+}
+
+.sidebar-logo {
+    padding: 1.5rem 1.25rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--sidebar-border);
+}
+
+.sidebar-logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(145deg, #0a84ff, #0071e3);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,113,227,0.4);
+}
+
+.sidebar-logo-name {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.02em;
+}
+
+.sidebar-logo-tag {
+    font-size: 0.62rem;
+    color: var(--sidebar-muted);
+    letter-spacing: 0.01em;
+    margin-top: 1px;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 0.75rem 0.75rem;
+    overflow-y: auto;
+}
+
+.sidebar-nav::-webkit-scrollbar { width: 0; }
+
+.nav-section-title {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--sidebar-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.75rem 0.5rem 0.3rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 0.845rem;
+    font-weight: 400;
+    transition: all 0.15s;
+    margin-bottom: 1px;
+}
+
+.nav-item i {
+    font-size: 1rem;
+    flex-shrink: 0;
+    width: 18px;
+    text-align: center;
+    opacity: 0.7;
+}
+
+.nav-item:hover {
+    background: var(--sidebar-hover);
+    color: white;
+}
+
+.nav-item:hover i { opacity: 1; }
+
+.nav-item.active {
+    background: var(--sidebar-active-bg);
+    color: var(--sidebar-active-text);
+    font-weight: 500;
+}
+
+.nav-item.active i { opacity: 1; }
+
+.sidebar-footer {
+    padding: 0.75rem;
+    border-top: 1px solid var(--sidebar-border);
+}
+
+.user-pill {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    margin-bottom: 6px;
+}
+
+.user-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #0a84ff, #0071e3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+}
+
+.user-name {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: white;
+}
+
+.user-role {
+    font-size: 0.68rem;
+    color: var(--sidebar-muted);
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    color: var(--sidebar-muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: all 0.15s;
+    width: 100%;
+}
+
+.logout-btn:hover {
+    background: rgba(255,59,48,0.1);
+    color: #ff6b6b;
+}
+
+/* ── Main Content (iOS light) ── */
+.main-content {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--main-bg);
+}
+
+.topbar {
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--main-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(245,245,247,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.topbar-title h1 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-1);
+    letter-spacing: -0.02em;
+}
+
+.topbar-title p {
+    font-size: 0.765rem;
+    color: var(--text-3);
+    margin-top: 1px;
+}
+
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+
+.btn-primary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.83rem;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+    box-shadow: 0 1px 4px rgba(0,113,227,0.25);
+}
+
+.btn-primary:hover { background: var(--blue-dark); color: white; }
+
+.btn-ghost {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    background: white;
+    color: var(--text-2);
+    border: 1px solid var(--main-border-2);
+    border-radius: var(--radius-sm);
+    font-size: 0.83rem;
+    font-family: var(--font);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-ghost:hover { background: #f0f0f2; color: var(--text-1); }
+
+.badge-count {
+    font-size: 0.68rem;
+    padding: 2px 7px;
+    border-radius: 20px;
+    background: var(--blue);
+    color: white;
+    font-weight: 700;
+    min-width: 20px;
+    text-align: center;
+}
+
+.page-body { padding: 1.75rem 2rem; }
+
+/* ── Stat Cards ── */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid var(--main-border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s;
+    cursor: default;
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.stat-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.stat-icon {
+    width: 40px; height: 40px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.stat-icon.blue { background: var(--blue-light); color: var(--blue); }
+.stat-icon.teal { background: var(--teal-light); color: var(--teal); }
+.stat-icon.green { background: var(--green-light); color: var(--green); }
+.stat-icon.red { background: var(--red-light); color: var(--red); }
+
+.stat-pill {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+}
+
+.stat-pill.blue { background: var(--blue-light); color: var(--blue); }
+.stat-pill.green { background: var(--green-light); color: var(--green); }
+.stat-pill.amber { background: var(--amber-light); color: var(--amber); }
+.stat-pill.red { background: var(--red-light); color: var(--red); }
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-1);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.775rem;
+    color: var(--text-2);
+}
+
+/* ── Content Grid ── */
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr 310px;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* ── Cards ── */
+.card {
+    background: white;
+    border: 1px solid var(--main-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.card-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--main-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-header h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-1);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.card-header h3 i { color: var(--blue); }
+
+.card-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: var(--blue-light);
+    color: var(--blue);
+}
+
+/* ── Schedule Table ── */
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.schedule-table th {
+    padding: 9px 16px;
+    text-align: left;
+    font-size: 0.685rem;
+    font-weight: 700;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    background: #fafafa;
+    border-bottom: 1px solid var(--main-border);
+}
+
+.schedule-table td {
+    padding: 11px 16px;
+    font-size: 0.845rem;
+    color: var(--text-2);
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.schedule-table tr:last-child td { border-bottom: none; }
+
+.schedule-table tbody tr {
+    transition: background 0.1s;
+    cursor: default;
+}
+
+.schedule-table tbody tr:hover td {
+    background: #f5f5f7;
+    color: var(--text-1);
+}
+
+.time-cell {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-1);
+    font-variant-numeric: tabular-nums;
+}
+
+.priority-high { color: var(--red); font-weight: 600; font-size: 0.78rem; }
+.priority-medium { color: var(--amber); font-weight: 600; font-size: 0.78rem; }
+.priority-low { color: var(--green); font-weight: 600; font-size: 0.78rem; }
+
+/* ── Status Badges ── */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.status-badge::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+}
+
+.status-badge.completed { background: var(--green-light); color: #1a7a35; }
+.status-badge.completed::before { background: var(--green); }
+.status-badge.scheduled { background: var(--blue-light); color: var(--blue-dark); }
+.status-badge.scheduled::before { background: var(--blue); }
+.status-badge.pending { background: var(--amber-light); color: #b36a00; }
+.status-badge.pending::before { background: var(--amber); }
+.status-badge.conflict { background: var(--red-light); color: #cc2200; }
+.status-badge.conflict::before { background: var(--red); }
+
+/* ── Right Panel ── */
+.right-panel { display: flex; flex-direction: column; gap: 1rem; }
+
+.resource-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    padding: 1rem;
+}
+
+.resource-item {
+    background: #f9f9fb;
+    border: 1px solid var(--main-border);
+    border-radius: 12px;
+    padding: 1rem 0.75rem;
+    text-align: center;
+    transition: all 0.15s;
+    cursor: default;
+}
+
+.resource-item:hover {
+    background: white;
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.resource-icon {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    font-size: 1rem;
+}
+
+.resource-icon.blue { background: var(--blue-light); color: var(--blue); }
+.resource-icon.teal { background: var(--teal-light); color: var(--teal); }
+.resource-icon.green { background: var(--green-light); color: var(--green); }
+.resource-icon.purple { background: var(--purple-light); color: var(--purple); }
+
+.res-num {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+.res-lbl {
+    font-size: 0.68rem;
+    color: var(--text-2);
+    margin-top: 3px;
+    line-height: 1.3;
+}
+
+/* ── Alerts ── */
+.alert-list { padding: 0.25rem 0; }
+
+.alert-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 11px 1.25rem;
+    border-bottom: 1px solid var(--main-border);
+    transition: background 0.12s;
+    cursor: default;
+}
+
+.alert-row:last-child { border-bottom: none; }
+.alert-row:hover { background: #f9f9fb; }
+
+.alert-icon-wrap {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.alert-icon-wrap.warn { background: var(--amber-light); color: var(--amber); }
+.alert-icon-wrap.danger { background: var(--red-light); color: var(--red); }
+
+.alert-text {
+    font-size: 0.815rem;
+    color: var(--text-1);
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.alert-sub {
+    font-size: 0.72rem;
+    color: var(--text-3);
+    margin-top: 2px;
+}
+
+/* ── Quick Actions ── */
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.75rem;
+    padding: 1.1rem 1.25rem;
+}
+
+.action-card {
+    background: #f9f9fb;
+    border: 1px solid var(--main-border);
+    border-radius: 14px;
+    padding: 1.1rem 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+    transition: all 0.2s;
+    color: var(--text-2);
+    text-align: center;
+    cursor: pointer;
+}
+
+.action-card:hover {
+    background: white;
+    border-color: var(--blue);
+    color: var(--blue);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+}
+
+.action-card-icon {
+    width: 46px; height: 46px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    transition: all 0.2s;
+}
+
+.action-card-icon.blue { background: var(--blue-light); color: var(--blue); }
+.action-card-icon.teal { background: var(--teal-light); color: var(--teal); }
+.action-card-icon.green { background: var(--green-light); color: var(--green); }
+.action-card-icon.purple { background: var(--purple-light); color: var(--purple); }
+.action-card-icon.amber { background: var(--amber-light); color: var(--amber); }
+.action-card-icon.red { background: var(--red-light); color: var(--red); }
+
+.action-card:hover .action-card-icon {
+    background: var(--blue);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,113,227,0.3);
+}
+
+.action-card span {
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.3;
+    color: inherit;
+}
+
+/* ── 5-column stats grid ── */
+.stats-grid-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.stat-card-icon-only {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.system-status-icons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.sys-icon-wrap {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.sys-icon-wrap.amber { background: var(--amber-light); color: var(--amber); }
+.sys-icon-wrap.blue { background: var(--blue-light); color: var(--blue); }
+
+/* ── Action Buttons Bar (professor layout) ── */
+.action-buttons-bar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--main-border);
+    background: #fafafa;
+}
+
+.action-btn-left,
+.action-btn-right {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.action-btn-center {
+    display: flex;
+    align-items: stretch;
+}
+
+.dash-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 16px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-size: 0.845rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.dash-action-btn.blue {
+    background: var(--blue);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,113,227,0.2);
+}
+
+.dash-action-btn.blue:hover {
+    background: var(--blue-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0,113,227,0.3);
+    color: white;
+}
+
+.dash-action-btn i { font-size: 1.1rem; flex-shrink: 0; }
+
+.dash-action-btn-tall {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 24px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-size: 0.845rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    min-width: 140px;
+    text-align: center;
+    background: var(--blue);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,113,227,0.2);
+}
+
+.dash-action-btn-tall:hover {
+    background: var(--blue-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0,113,227,0.3);
+    color: white;
+}
+
+.dash-action-btn-tall i { font-size: 1.6rem; }
+
+/* ── Improved Schedule Table ── */
+.schedule-table thead tr {
+    background: linear-gradient(to right, #f0f4ff, #f5f5f7);
+}
+
+.schedule-table th {
+    padding: 11px 16px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 2px solid var(--blue-light);
+}
+
+.schedule-table td {
+    padding: 13px 16px;
+    font-size: 0.845rem;
+    color: var(--text-1);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    vertical-align: middle;
+}
+
+.schedule-table tbody tr:nth-child(even) td {
+    background: #fafbff;
+}
+
+.schedule-table tbody tr:hover td {
+    background: #eef4ff;
+    color: var(--text-1);
+}
+
+.time-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--blue);
+    background: var(--blue-light);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-variant-numeric: tabular-nums;
+}
+
+.time-cell::before {
+    content: '\F281';
+    font-family: 'Bootstrap Icons';
+    font-size: 0.75rem;
+}
+
+.dock-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+    color: var(--text-1);
+}
+
+.dock-cell::before {
+    content: '\F588';
+    font-family: 'Bootstrap Icons';
+    color: var(--text-3);
+    font-size: 0.8rem;
+}
+
+.elevator-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 400;
+    color: var(--text-2);
+    font-size: 0.82rem;
+}
+
+.vendor-cell {
+    font-weight: 500;
+    color: var(--text-1);
+}
+
+/* ── Improved Resource Overview ── */
+.resource-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    padding: 1.1rem;
+}
+
+.resource-item {
+    background: white;
+    border: 1px solid var(--main-border);
+    border-radius: 13px;
+    padding: 1rem 0.75rem;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+}
+
+.resource-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 13px 13px 0 0;
+}
+
+.resource-item.r-blue::before { background: var(--blue); }
+.resource-item.r-teal::before { background: var(--teal); }
+.resource-item.r-green::before { background: var(--green); }
+.resource-item.r-purple::before { background: var(--purple); }
+
+.resource-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--main-border-2);
+}
+
+.resource-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    font-size: 1.05rem;
+}
+
+.resource-icon.blue { background: var(--blue-light); color: var(--blue); }
+.resource-icon.teal { background: var(--teal-light); color: var(--teal); }
+.resource-icon.green { background: var(--green-light); color: var(--green); }
+.resource-icon.purple { background: var(--purple-light); color: var(--purple); }
+
+.res-num {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+.res-lbl {
+    font-size: 0.68rem;
+    color: var(--text-2);
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+/* ── Improved Alerts ── */
+.alert-list {
+    padding: 0.375rem 0;
+}
+
+.alert-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 11px 1.25rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    transition: background 0.12s;
+    cursor: default;
+}
+
+.alert-row:last-child { border-bottom: none; }
+
+.alert-row:hover { background: #fafbff; }
+
+.alert-icon-wrap {
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.alert-icon-wrap.warn {
+    background: var(--amber-light);
+    color: var(--amber);
+    border: 1px solid rgba(255,159,10,0.2);
+}
+
+.alert-icon-wrap.danger {
+    background: var(--red-light);
+    color: var(--red);
+    border: 1px solid rgba(255,59,48,0.2);
+}
+
+.alert-text {
+    font-size: 0.815rem;
+    color: var(--text-1);
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.alert-sub {
+    font-size: 0.7rem;
+    color: var(--text-3);
+    margin-top: 2px;
+    font-weight: 400;
+}
+
+/* ── Card section separator ── */
+.card + .card {
+    margin-top: 0;
+}
+
+.right-panel .card {
+    box-shadow: var(--shadow-sm);
+}
+
+.right-panel .card-header {
+    background: linear-gradient(to right, #f9f9fb, white);
+}
+
+/* ═══════════════════════════════════
+   DARK MODE
+═══════════════════════════════════ */
+[data-theme="dark"] {
+    --main-bg: #1c1c1e;
+    --main-bg-2: #2c2c2e;
+    --main-border: rgba(255,255,255,0.08);
+    --main-border-2: rgba(255,255,255,0.14);
+    --text-1: #f5f5f7;
+    --text-2: #aeaeb2;
+    --text-3: #636366;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+    --blue-light: rgba(0,113,227,0.18);
+    --teal-light: rgba(0,180,216,0.15);
+    --green-light: rgba(52,199,89,0.15);
+    --amber-light: rgba(255,159,10,0.15);
+    --red-light: rgba(255,59,48,0.15);
+    --purple-light: rgba(191,90,242,0.15);
+}
+
+[data-theme="dark"] .main-content {
+    background: var(--main-bg);
+}
+
+[data-theme="dark"] .topbar {
+    background: rgba(28,28,30,0.85);
+    border-bottom-color: var(--main-border);
+}
+
+[data-theme="dark"] .card {
+    background: #2c2c2e;
+    border-color: var(--main-border);
+}
+
+[data-theme="dark"] .card-header {
+    background: #2c2c2e;
+    border-bottom-color: var(--main-border);
+}
+
+[data-theme="dark"] .right-panel .card-header {
+    background: linear-gradient(to right, #323234, #2c2c2e);
+}
+
+[data-theme="dark"] .stat-card {
+    background: #2c2c2e;
+    border-color: var(--main-border);
+}
+
+[data-theme="dark"] .stat-card:hover {
+    background: #3a3a3c;
+}
+
+[data-theme="dark"] .schedule-table thead tr {
+    background: linear-gradient(to right, #1a2040, #2c2c2e);
+}
+
+[data-theme="dark"] .schedule-table th {
+    border-bottom-color: rgba(0,113,227,0.3);
+}
+
+[data-theme="dark"] .schedule-table td {
+    border-bottom-color: rgba(255,255,255,0.05);
+    color: var(--text-2);
+}
+
+[data-theme="dark"] .schedule-table tbody tr:nth-child(even) td {
+    background: rgba(255,255,255,0.025);
+}
+
+[data-theme="dark"] .schedule-table tbody tr:hover td {
+    background: rgba(0,113,227,0.1);
+    color: var(--text-1);
+}
+
+[data-theme="dark"] .resource-item {
+    background: #3a3a3c;
+    border-color: var(--main-border);
+}
+
+[data-theme="dark"] .resource-item:hover {
+    background: #444446;
+}
+
+[data-theme="dark"] .alert-row:hover {
+    background: rgba(255,255,255,0.04);
+}
+
+[data-theme="dark"] .btn-ghost {
+    background: #3a3a3c;
+    border-color: var(--main-border-2);
+    color: var(--text-2);
+}
+
+[data-theme="dark"] .btn-ghost:hover {
+    background: #444446;
+    color: var(--text-1);
+}
+
+[data-theme="dark"] .action-buttons-bar {
+    background: #252527;
+    border-top-color: var(--main-border);
+}
+
+[data-theme="dark"] .action-btn-left .dash-action-btn,
+[data-theme="dark"] .action-btn-right .dash-action-btn,
+[data-theme="dark"] .dash-action-btn-tall {
+    background: rgba(0,113,227,0.85);
+}
+
+[data-theme="dark"] .time-cell {
+    background: rgba(0,113,227,0.18);
+    color: #60a5fa;
+}
+
+[data-theme="dark"] .card-badge {
+    background: rgba(0,113,227,0.18);
+    color: #60a5fa;
+}
+
+[data-theme="dark"] .stat-pill.blue { background: rgba(0,113,227,0.18); color: #60a5fa; }
+[data-theme="dark"] .stat-pill.green { background: rgba(52,199,89,0.15); color: #34d399; }
+[data-theme="dark"] .stat-pill.amber { background: rgba(255,159,10,0.15); color: #fcd34d; }
+[data-theme="dark"] .stat-pill.red { background: rgba(255,59,48,0.15); color: #f87171; }
+
+[data-theme="dark"] .status-badge.completed { background: rgba(52,199,89,0.15); color: #34d399; }
+[data-theme="dark"] .status-badge.scheduled { background: rgba(0,113,227,0.15); color: #60a5fa; }
+[data-theme="dark"] .status-badge.pending { background: rgba(255,159,10,0.15); color: #fcd34d; }
+[data-theme="dark"] .status-badge.conflict { background: rgba(255,59,48,0.15); color: #f87171; }
+
+[data-theme="dark"] .input-wrap input {
+    background: #3a3a3c;
+    border-color: rgba(255,255,255,0.12);
+    color: var(--text-1);
+}
+
+[data-theme="dark"] .input-wrap input:focus {
+    background: #444446;
+    border-color: var(--blue);
+}
+
+[data-theme="dark"] .login-card {
+    background: #2c2c2e;
+    border-color: var(--main-border);
+}
+
+[data-theme="dark"] .login-page {
+    background: #1c1c1e;
+}
+
+/* ═══════════════════════════════════
+   IMPROVED TABLE
+═══════════════════════════════════ */
+.schedule-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.schedule-table thead tr {
+    background: linear-gradient(to right, #eef4ff, #f5f5f7);
+}
+
+.schedule-table th {
+    padding: 11px 16px;
+    font-size: 0.695rem;
+    font-weight: 700;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    border-bottom: 2px solid #dde8ff;
+    white-space: nowrap;
+}
+
+.schedule-table th:first-child { border-radius: 0; }
+
+.schedule-table td {
+    padding: 12px 16px;
+    font-size: 0.845rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    vertical-align: middle;
+    transition: background 0.12s;
+}
+
+.schedule-table tbody tr:nth-child(even) td {
+    background: #fafbff;
+}
+
+.schedule-table tbody tr:hover td {
+    background: #eef4ff;
+}
+
+.schedule-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Row number column */
+.schedule-table td.row-num {
+    font-size: 0.72rem;
+    color: var(--text-3);
+    font-weight: 600;
+    width: 32px;
+    text-align: center;
+}
+
+/* Time pill */
+.time-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--blue);
+    background: var(--blue-light);
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Dock cell */
+.dock-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: var(--text-1);
+    font-size: 0.845rem;
+}
+
+.dock-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    background: #f0f4ff;
+    color: var(--blue);
+    font-size: 0.65rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* Elevator cell */
+.elevator-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--text-2);
+}
+
+/* Vendor cell */
+.vendor-cell {
+    font-weight: 500;
+    color: var(--text-1);
+    font-size: 0.845rem;
+}
+
+/* Table empty state */
+.table-empty {
+    text-align: center;
+    color: var(--text-3);
+    padding: 3rem 1rem;
+}
+
+.table-empty i {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.table-empty p {
+    font-size: 0.875rem;
+}
+
+=== RESERVATION FORM ===
+{% extends 'base.html' %}
+{% block title %}{% if reservation %}Edit{% else %}New{% endif %} Reservation â€” VaultDock{% endblock %}
+{% block content %}
+<div class="app-layout">
+
+    {% include 'partials/sidebar.html' %}
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>{% if reservation %}Edit Reservation #{{ reservation.pk }}{% else %}New Reservation{% endif %}</h1>
+                <p>{% if reservation %}Update reservation details{% else %}Create a new dock bay reservation{% endif %}</p>
+            </div>
+            <div class="topbar-actions">
+                <a href="{% url 'logistics:reservation_list' %}" class="btn-ghost">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+
+        <div class="page-body">
+            <div class="form-card">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="form-grid-2">
+                        <!-- Vendor -->
+                        <div class="form-group">
+                            <label><i class="bi bi-shop-window"></i> Vendor</label>
+                            <select name="vendor" required>
+                                <option value="">Select vendor...</option>
+                                {% for v in vendors %}
+                                <option value="{{ v.nys_vendor_id }}"
+                                    {% if reservation and reservation.vendor_id == v.nys_vendor_id %}selected{% endif %}>
+                                    {{ v.vendor_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Dock -->
+                        <div class="form-group">
+                            <label><i class="bi bi-geo-alt-fill"></i> Dock Bay</label>
+                            <select name="dock" required>
+                                <option value="">Select dock...</option>
+                                {% for d in docks %}
+                                <option value="{{ d.dock_id }}"
+                                    {% if reservation and reservation.dock_id == d.dock_id %}selected{% endif %}>
+                                    {{ d.dock_name }} â€” {{ d.location }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Start DateTime -->
+                        <div class="form-group">
+                            <label><i class="bi bi-clock-fill"></i> Start Date & Time</label>
+                            <input type="datetime-local" name="start_datetime" required
+                                value="{% if reservation %}{{ reservation.start_datetime|date:'Y-m-d' }}T{{ reservation.start_datetime|time:'H:i' }}{% endif %}">
+                        </div>
+
+                        <!-- End DateTime -->
+                        <div class="form-group">
+                            <label><i class="bi bi-clock"></i> End Date & Time</label>
+                            <input type="datetime-local" name="end_datetime" required
+                                value="{% if reservation %}{{ reservation.end_datetime|date:'Y-m-d' }}T{{ reservation.end_datetime|time:'H:i' }}{% endif %}">
+                        </div>
+
+                        <!-- Status -->
+                        <div class="form-group">
+                            <label><i class="bi bi-toggle-on"></i> Status</label>
+                            <select name="status" required>
+                                {% for value, label in status_choices %}
+                                <option value="{{ value }}"
+                                    {% if reservation and reservation.status == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Priority -->
+                        <div class="form-group">
+                            <label><i class="bi bi-flag-fill"></i> Priority</label>
+                            <select name="priority" required>
+                                {% for value, label in priority_choices %}
+                                <option value="{{ value }}"
+                                    {% if reservation and reservation.priority == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Elevator Section -->
+                    <div class="form-section-divider">
+                        <span>Elevator Requirements</span>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label><i class="bi bi-arrow-up-square-fill"></i> Requires Elevator?</label>
+                            <div class="toggle-wrap">
+                                <input type="checkbox" name="requires_elevator" id="requiresElevator"
+                                    {% if reservation and reservation.requires_elevator %}checked{% endif %}>
+                                <label for="requiresElevator" class="toggle-label">Yes, elevator needed</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="bi bi-arrow-up-square-fill"></i> Assign Elevator</label>
+                            <select name="elevator">
+                                <option value="">No elevator needed</option>
+                                {% for e in elevators %}
+                                <option value="{{ e.elevator_id }}">
+                                    {{ e.elevator_name }} â€” {{ e.building }} ({{ e.capacity }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{% url 'logistics:reservation_list' %}" class="btn-ghost">Cancel</a>
+                        <button type="submit" class="btn-primary">
+                            <i class="bi bi-check-lg"></i>
+                            {% if reservation %}Update Reservation{% else %}Create Reservation{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    }
+</script>
+{% endblock %}
+
+=== RESERVATION LIST ===
+{% extends 'base.html' %}
+{% block title %}Reservations â€” VaultDock{% endblock %}
+{% block content %}
+<div class="app-layout">
+
+    {% include 'partials/sidebar.html' %}
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>Reservations</h1>
+                <p>Manage all dock bay reservations</p>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn-ghost" id="themeToggle" onclick="toggleTheme()">
+                    <i class="bi bi-moon-fill" id="themeIcon"></i>
+                </button>
+                <a href="{% url 'logistics:reservation_create' %}" class="btn-primary">
+                    <i class="bi bi-plus-lg"></i> New Reservation
+                </a>
+            </div>
+        </div>
+
+        <div class="page-body">
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-label">
+                    <i class="bi bi-funnel-fill"></i> Filter by status:
+                </div>
+                <div class="filter-pills">
+                    <a href="{% url 'logistics:reservation_list' %}"
+                       class="filter-pill {% if not status_filter %}active{% endif %}">
+                        All
+                    </a>
+                    {% for value, label in status_choices %}
+                    <a href="?status={{ value }}"
+                       class="filter-pill status-{{ value|lower }} {% if status_filter == value %}active{% endif %}">
+                        {{ label }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Table Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="bi bi-calendar2-check-fill"></i> All Reservations</h3>
+                    <span class="card-badge">{{ reservations|length }} total</span>
+                </div>
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Vendor</th>
+                            <th>Dock</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Priority</th>
+                            <th>Elevator</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in reservations %}
+                        <tr>
+                            <td style="color:var(--text-3);font-size:0.78rem;">{{ r.reservation_id }}</td>
+                            <td><span class="vendor-cell">{{ r.vendor.vendor_name }}</span></td>
+                            <td>
+                                <span class="dock-cell">
+                                    <span class="dock-badge">{{ r.dock.dock_name|slice:":1" }}</span>
+                                    {{ r.dock.dock_name }}
+                                </span>
+                            </td>
+                            <td><span class="time-cell">{{ r.start_datetime|date:"M d, g:i A" }}</span></td>
+                            <td><span style="font-size:0.82rem;color:var(--text-2);">{{ r.end_datetime|time:"g:i A" }}</span></td>
+                            <td>
+                                <span class="priority-{{ r.priority|lower }}">
+                                    {% if r.priority == 'High' %}â†‘{% elif r.priority == 'Medium' %}â†’{% else %}â†“{% endif %}
+                                    {{ r.priority }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if r.requires_elevator %}
+                                    <span style="color:var(--teal);font-size:0.8rem;font-weight:500;">
+                                        <i class="bi bi-check-circle-fill"></i> Required
+                                    </span>
+                                {% else %}
+                                    <span style="color:var(--text-3);font-size:0.8rem;">â€”</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="status-badge {{ r.status|lower }}">{{ r.status }}</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{% url 'logistics:reservation_edit' r.pk %}"
+                                       class="action-icon-btn edit" title="Edit">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                    <a href="{% url 'logistics:reservation_delete' r.pk %}"
+                                       class="action-icon-btn delete" title="Delete">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="table-empty">
+                                <i class="bi bi-calendar-x"></i>
+                                <p>No reservations found</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        document.getElementById('themeIcon').className = isDark ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = saved === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    });
+</script>
+{% endblock %}
+
+=== LOGISTICS VIEWS.PY ===
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Reservation, DockBay, ElevatorSchedule, FreightElevator
+from vendors.models import Vendor
+
+
+@login_required
+def reservation_list(request):
+    reservations = Reservation.objects.select_related(
+        'vendor', 'dock'
+    ).order_by('-start_datetime')
+
+    # Filter by status if requested
+    status_filter = request.GET.get('status', '')
+    if status_filter:
+        reservations = reservations.filter(status=status_filter)
+
+    context = {
+        'reservations': reservations,
+        'status_filter': status_filter,
+        'status_choices': Reservation.STATUS_CHOICES,
+    }
+    return render(request, 'logistics/reservation_list.html', context)
+
+
+@login_required
+def reservation_create(request):
+    vendors = Vendor.objects.filter(approved_status='Yes').order_by('vendor_name')
+    docks = DockBay.objects.filter(status='Active').order_by('dock_name')
+    elevators = FreightElevator.objects.filter(status='Active').order_by('elevator_name')
+
+    if request.method == 'POST':
+        vendor_id = request.POST.get('vendor')
+        dock_id = request.POST.get('dock')
+        start_datetime = request.POST.get('start_datetime')
+        end_datetime = request.POST.get('end_datetime')
+        status = request.POST.get('status')
+        priority = request.POST.get('priority')
+        requires_elevator = request.POST.get('requires_elevator') == 'on'
+        elevator_id = request.POST.get('elevator')
+
+        try:
+            reservation = Reservation.objects.create(
+                vendor_id=vendor_id,
+                dock_id=dock_id,
+                start_datetime=start_datetime,
+                end_datetime=end_datetime,
+                status=status,
+                priority=priority,
+                requires_elevator=requires_elevator,
+            )
+
+            # If elevator selected, create elevator schedule
+            if requires_elevator and elevator_id:
+                ElevatorSchedule.objects.create(
+                    reservation=reservation,
+                    elevator_id=elevator_id,
+                    start_datetime=start_datetime,
+                    end_datetime=end_datetime,
+                    status=status,
+                    trip_count=1,
+                )
+
+            messages.success(request, f'Reservation #{reservation.reservation_id} created successfully!')
+            return redirect('logistics:reservation_list')
+
+        except Exception as e:
+            messages.error(request, f'Error creating reservation: {str(e)}')
+
+    context = {
+        'vendors': vendors,
+        'docks': docks,
+        'elevators': elevators,
+        'status_choices': Reservation.STATUS_CHOICES,
+        'priority_choices': Reservation.PRIORITY_CHOICES,
+    }
+    return render(request, 'logistics/reservation_form.html', context)
+
+
+@login_required
+def reservation_edit(request, pk):
+    reservation = get_object_or_404(Reservation, pk=pk)
+    vendors = Vendor.objects.filter(approved_status='Yes').order_by('vendor_name')
+    docks = DockBay.objects.filter(status='Active').order_by('dock_name')
+    elevators = FreightElevator.objects.filter(status='Active').order_by('elevator_name')
+
+    if request.method == 'POST':
+        reservation.vendor_id = request.POST.get('vendor')
+        reservation.dock_id = request.POST.get('dock')
+        reservation.start_datetime = request.POST.get('start_datetime')
+        reservation.end_datetime = request.POST.get('end_datetime')
+        reservation.status = request.POST.get('status')
+        reservation.priority = request.POST.get('priority')
+        reservation.requires_elevator = request.POST.get('requires_elevator') == 'on'
+
+        try:
+            reservation.save()
+            messages.success(request, f'Reservation #{pk} updated successfully!')
+            return redirect('logistics:reservation_list')
+        except Exception as e:
+            messages.error(request, f'Error updating reservation: {str(e)}')
+
+    context = {
+        'reservation': reservation,
+        'vendors': vendors,
+        'docks': docks,
+        'elevators': elevators,
+        'status_choices': Reservation.STATUS_CHOICES,
+        'priority_choices': Reservation.PRIORITY_CHOICES,
+    }
+    return render(request, 'logistics/reservation_form.html', context)
+
+
+@login_required
+def reservation_delete(request, pk):
+    reservation = get_object_or_404(Reservation, pk=pk)
+    if request.method == 'POST':
+        reservation.delete()
+        messages.success(request, f'Reservation #{pk} deleted.')
+        return redirect('logistics:reservation_list')
+    return render(request, 'logistics/reservation_confirm_delete.html', {'reservation': reservation})
+
+=== LOGISTICS URLS.PY ===
+from django.urls import path
+from . import views
+
+app_name = 'logistics'
+
+urlpatterns = [
+    # Reservations
+    path('reservations/', views.reservation_list, name='reservation_list'),
+    path('reservations/new/', views.reservation_create, name='reservation_create'),
+    path('reservations/<int:pk>/edit/', views.reservation_edit, name='reservation_edit'),
+    path('reservations/<int:pk>/delete/', views.reservation_delete, name='reservation_delete'),
+]

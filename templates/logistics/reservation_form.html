@@ -1,0 +1,129 @@
+cd E:\logistics_Project_Prof-Walter
+
+@'
+{% extends "base.html" %}
+{% block title %}{% if reservation %}Edit{% else %}New{% endif %} Reservation - VaultDock{% endblock %}
+{% block content %}
+<div class="app-layout">
+    {% include "partials/sidebar.html" %}
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>{% if reservation %}Edit Reservation #{{ reservation.pk }}{% else %}New Reservation{% endif %}</h1>
+                <p>{% if reservation %}Update reservation details{% else %}Create a new dock bay reservation{% endif %}</p>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn-ghost" id="themeToggle" onclick="toggleTheme()">
+                    <i class="bi bi-moon-fill" id="themeIcon"></i>
+                </button>
+                <a href="{% url 'logistics:reservation_list' %}" class="btn-ghost">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+        <div class="page-body">
+            <div class="form-card">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label><i class="bi bi-shop-window"></i> Vendor</label>
+                            <select name="vendor" required>
+                                <option value="">Select vendor...</option>
+                                {% for v in vendors %}
+                                <option value="{{ v.nys_vendor_id }}" {% if reservation and reservation.vendor_id == v.nys_vendor_id %}selected{% endif %}>
+                                    {{ v.vendor_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-geo-alt-fill"></i> Dock Bay</label>
+                            <select name="dock" required>
+                                <option value="">Select dock...</option>
+                                {% for d in docks %}
+                                <option value="{{ d.dock_id }}" {% if reservation and reservation.dock_id == d.dock_id %}selected{% endif %}>
+                                    {{ d.dock_name }} - {{ d.location }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-clock-fill"></i> Start Date &amp; Time</label>
+                            <input type="datetime-local" name="start_datetime" required
+                                value="{% if reservation %}{{ reservation.start_datetime|date:'Y-m-d' }}T{{ reservation.start_datetime|time:'H:i' }}{% endif %}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-clock"></i> End Date &amp; Time</label>
+                            <input type="datetime-local" name="end_datetime" required
+                                value="{% if reservation %}{{ reservation.end_datetime|date:'Y-m-d' }}T{{ reservation.end_datetime|time:'H:i' }}{% endif %}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-toggle-on"></i> Status</label>
+                            <select name="status" required>
+                                {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if reservation and reservation.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-flag-fill"></i> Priority</label>
+                            <select name="priority" required>
+                                {% for value, label in priority_choices %}
+                                <option value="{{ value }}" {% if reservation and reservation.priority == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-section-divider"><span>Elevator Requirements</span></div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label><i class="bi bi-arrow-up-square-fill"></i> Requires Elevator?</label>
+                            <div class="toggle-wrap">
+                                <input type="checkbox" name="requires_elevator" id="requiresElevator"
+                                    {% if reservation and reservation.requires_elevator %}checked{% endif %}>
+                                <label for="requiresElevator" class="toggle-label">Yes, elevator needed</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-arrow-up-square-fill"></i> Assign Elevator</label>
+                            <select name="elevator">
+                                <option value="">No elevator needed</option>
+                                {% for e in elevators %}
+                                <option value="{{ e.elevator_id }}">{{ e.elevator_name }} - {{ e.building }} ({{ e.capacity }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <a href="{% url 'logistics:reservation_list' %}" class="btn-ghost">Cancel</a>
+                        <button type="submit" class="btn-primary">
+                            <i class="bi bi-check-lg"></i>
+                            {% if reservation %}Update Reservation{% else %}Create Reservation{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        document.getElementById('themeIcon').className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = saved === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    });
+</script>
+{% endblock %}
+'@ | Out-File -FilePath "templates\logistics\reservation_form.html" -Encoding utf8 -Force
+Write-Host "reservation_form.html fixed!"

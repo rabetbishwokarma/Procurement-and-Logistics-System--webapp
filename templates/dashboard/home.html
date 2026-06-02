@@ -1,0 +1,259 @@
+﻿{% extends "base.html" %}
+{% block title %}Dashboard - Procurement & Logistics System{% endblock %}
+{% block content %}
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon"><i class="bi bi-building-check"></i></div>
+            <div>
+                <div class="sidebar-logo-name">VaultDock</div>
+                <div class="sidebar-logo-tag">Procurement &amp; Logistics</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Operations</div>
+            <a href="#" class="nav-item active"><i class="bi bi-squares-fill"></i> Dashboard</a>
+            <a href="{% url 'logistics:reservation_list' %}" class="nav-item"><i class="bi bi-calendar2-check-fill"></i> Reservations</a>
+            <a href="#" class="nav-item"><i class="bi bi-truck-front-fill"></i> Deliveries</a>
+            <a href="#" class="nav-item"><i class="bi bi-arrow-up-square-fill"></i> Elevators</a>
+            <a href="#" class="nav-item"><i class="bi bi-p-square-fill"></i> Dock Bays</a>
+            <div class="nav-section-title">Procurement</div>
+            <a href="#" class="nav-item"><i class="bi bi-box-fill"></i> Items</a>
+            <a href="#" class="nav-item"><i class="bi bi-bag-check-fill"></i> Orders</a>
+            <a href="#" class="nav-item"><i class="bi bi-file-earmark-text-fill"></i> Contracts</a>
+            <div class="nav-section-title">Directory</div>
+            <a href="#" class="nav-item"><i class="bi bi-shop-window"></i> Vendors</a>
+            <a href="#" class="nav-item"><i class="bi bi-gear-wide-connected"></i> Manufacturers</a>
+            <div class="nav-section-title">Analytics</div>
+            <a href="#" class="nav-item"><i class="bi bi-bar-chart-fill"></i> Reports</a>
+            <a href="{% url 'admin:index' %}" class="nav-item"><i class="bi bi-shield-lock-fill"></i> Admin</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-pill">
+                <div class="user-avatar">{{ request.user.username|first|upper }}</div>
+                <div>
+                    <div class="user-name">{{ request.user.username }}</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+            </div>
+            <a href="{% url 'accounts:logout' %}" class="logout-btn">
+                <i class="bi bi-box-arrow-left"></i> Sign out
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>Loading Dock &amp; Elevator Management System</h1>
+                <p>Procurement &amp; Logistics System &middot; VaultDock</p>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn-ghost" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
+                    <i class="bi bi-moon-fill" id="themeIcon"></i>
+                </button>
+                <a href="{% url 'logistics:reservation_list' %}" class="btn-ghost">
+                    <i class="bi bi-bell-fill"></i>
+                    Alerts <span class="badge-count">{{ open_alerts }}</span>
+                </a>
+                <a href="{% url 'logistics:reservation_create' %}" class="btn-primary">
+                    <i class="bi bi-plus-lg"></i> New Reservation
+                </a>
+            </div>
+        </div>
+
+        <div class="page-body">
+            <div class="stats-grid-5">
+                <div class="stat-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon blue"><i class="bi bi-calendar2-check-fill"></i></div>
+                        <span class="stat-pill blue">Today</span>
+                    </div>
+                    <div class="stat-number">{{ total_reservations }}</div>
+                    <div class="stat-label">Today's Reservations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon teal"><i class="bi bi-truck-front-fill"></i></div>
+                        <span class="stat-pill amber">Pending</span>
+                    </div>
+                    <div class="stat-number">{{ pending_deliveries }}</div>
+                    <div class="stat-label">Pending Deliveries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon green"><i class="bi bi-arrow-up-square-fill"></i></div>
+                        <span class="stat-pill green">Active</span>
+                    </div>
+                    <div class="stat-number">{{ elevator_schedules }}</div>
+                    <div class="stat-label">Elevator Schedules</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon red"><i class="bi bi-exclamation-octagon-fill"></i></div>
+                        <span class="stat-pill red">Open</span>
+                    </div>
+                    <div class="stat-number">{{ open_alerts }}</div>
+                    <div class="stat-label">Alerts</div>
+                </div>
+                <div class="stat-card stat-card-icon-only">
+                    <div class="system-status-icons">
+                        <div class="sys-icon-wrap amber"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                        <div class="sys-icon-wrap blue"><i class="bi bi-building-fill"></i></div>
+                    </div>
+                    <div class="stat-label" style="text-align:center;margin-top:8px;">System Status</div>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="bi bi-calendar3"></i> Today's Schedule</h3>
+                        <span class="card-badge">{{ todays_schedule|length }} entries</span>
+                    </div>
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Dock</th>
+                                <th>Elevator</th>
+                                <th>Vendor</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in todays_schedule %}
+                            <tr>
+                                <td><span class="time-cell">{{ r.start_datetime|time:"g:i A" }}</span></td>
+                                <td>
+                                    <span class="dock-cell">
+                                        <span class="dock-badge">{{ r.dock.dock_name|slice:":1" }}</span>
+                                        {{ r.dock.dock_name }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="elevator-cell">
+                                        {% with r.elevatorschedule_set.first as es %}
+                                            {% if es %}
+                                                <i class="bi bi-arrow-up-square-fill" style="color:var(--teal);"></i>
+                                                {{ es.elevator.elevator_name }}
+                                            {% else %}
+                                                <span style="color:var(--text-3);">-</span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </span>
+                                </td>
+                                <td><span class="vendor-cell">{{ r.vendor.vendor_name }}</span></td>
+                                <td><span class="status-badge {{ r.status|lower }}">{{ r.status }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="table-empty">
+                                    <i class="bi bi-calendar-x"></i>
+                                    <p>No reservations scheduled for today</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="action-buttons-bar">
+                        <div class="action-btn-left">
+                            <a href="{% url 'logistics:reservation_create' %}" class="dash-action-btn blue">
+                                <i class="bi bi-plus-circle-fill"></i><span>New Reservation</span>
+                            </a>
+                            <a href="#" class="dash-action-btn blue">
+                                <i class="bi bi-truck-front-fill"></i><span>Schedule Delivery</span>
+                            </a>
+                        </div>
+                        <div class="action-btn-center">
+                            <a href="#" class="dash-action-btn-tall blue">
+                                <i class="bi bi-arrow-up-square-fill"></i><span>Elevator Scheduler</span>
+                            </a>
+                        </div>
+                        <div class="action-btn-right">
+                            <a href="#" class="dash-action-btn blue">
+                                <i class="bi bi-calendar2-week-fill"></i><span>View Calendar</span>
+                            </a>
+                            <a href="#" class="dash-action-btn blue">
+                                <i class="bi bi-bar-chart-fill"></i><span>Reports</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-panel">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="bi bi-activity"></i> Resource Overview</h3>
+                        </div>
+                        <div class="resource-grid">
+                            <div class="resource-item r-blue">
+                                <div class="resource-icon blue"><i class="bi bi-person-badge-fill"></i></div>
+                                <div class="res-num">12</div>
+                                <div class="res-lbl">Staff on Duty</div>
+                            </div>
+                            <div class="resource-item r-teal">
+                                <div class="resource-icon teal"><i class="bi bi-arrow-up-square-fill"></i></div>
+                                <div class="res-num">3</div>
+                                <div class="res-lbl">Active Elevators</div>
+                            </div>
+                            <div class="resource-item r-green">
+                                <div class="resource-icon green"><i class="bi bi-geo-alt-fill"></i></div>
+                                <div class="res-num">4</div>
+                                <div class="res-lbl">Docks Open</div>
+                            </div>
+                            <div class="resource-item r-purple">
+                                <div class="resource-icon purple"><i class="bi bi-truck-flatbed"></i></div>
+                                <div class="res-num">2</div>
+                                <div class="res-lbl">Forklifts Ready</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="bi bi-bell-fill"></i> Alerts</h3>
+                            <span class="card-badge">{{ open_alerts }}</span>
+                        </div>
+                        <div class="alert-list">
+                            {% for alert in alerts %}
+                            <div class="alert-row">
+                                <div class="alert-icon-wrap {% if alert.alert_type == 'Elevator Overlap' or alert.alert_type == 'Dock Overbooked' %}danger{% else %}warn{% endif %}">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                </div>
+                                <div>
+                                    <div class="alert-text">{{ alert.description }}</div>
+                                    <div class="alert-sub">{{ alert.alert_type }}</div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div style="padding:1.5rem;text-align:center;color:var(--text-3);">
+                                <i class="bi bi-check-circle-fill" style="font-size:1.5rem;color:var(--green);display:block;margin-bottom:8px;"></i>
+                                All clear - no alerts
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        document.getElementById('themeIcon').className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = saved === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    });
+</script>
+{% endblock %}

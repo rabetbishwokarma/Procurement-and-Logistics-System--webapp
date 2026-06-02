@@ -1,0 +1,62 @@
+﻿{% extends "base.html" %}
+{% block title %}Sign In - VaultDock{% endblock %}
+{% block content %}
+<div class="login-page">
+    <div class="login-box">
+        <div class="login-header">
+            <div class="login-app-icon">
+                <i class="bi bi-building-check"></i>
+            </div>
+            <div class="login-app-name">Procurement &amp; Logistics System</div>
+            <div class="login-tagline">VaultDock &middot; Procurement &amp; Logistics Tools</div>
+        </div>
+        <div class="login-card">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert-error">
+                    <i class="bi bi-exclamation-circle-fill"></i> {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+            <form method="POST">
+                {% csrf_token %}
+                <div class="login-field">
+                    <label>Username</label>
+                    <div class="login-input-wrap">
+                        <i class="bi bi-person-fill"></i>
+                        <input type="text" name="username" placeholder="Enter your username" required autofocus>
+                    </div>
+                </div>
+                <div class="login-field">
+                    <label>Password</label>
+                    <div class="login-input-wrap">
+                        <i class="bi bi-lock-fill"></i>
+                        <input type="password" name="password" placeholder="Enter your password" required>
+                    </div>
+                </div>
+                <div class="login-check-wrap">
+                    <input type="checkbox" name="remember_me" id="rememberMe">
+                    <label for="rememberMe">Keep me signed in</label>
+                </div>
+                <button type="submit" class="btn-login">Sign In</button>
+                <div class="login-divider"><span>or</span></div>
+                <div class="login-links">
+                    <a href="#">Forgot password?</a>
+                    <a href="#">Contact support</a>
+                </div>
+            </form>
+        </div>
+        <p class="login-footer-text">
+            LaGuardia Community College &nbsp;|&nbsp; Professor Walter Delatorre<br>
+            Created by Rabet Bishwokarma &nbsp;|&nbsp; Project VaultDock<br>
+            Procurement &amp; Logistics System &copy; 2026 All rights reserved.
+        </p>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+</script>
+{% endblock %}

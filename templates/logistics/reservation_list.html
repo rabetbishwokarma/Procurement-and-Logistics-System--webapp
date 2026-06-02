@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% block title %}Reservations — VaultDock{% endblock %}
+{% block content %}
+<div class="app-layout">
+
+    {% include 'partials/sidebar.html' %}
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>Reservations</h1>
+                <p>Manage all dock bay reservations</p>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn-ghost" id="themeToggle" onclick="toggleTheme()">
+                    <i class="bi bi-moon-fill" id="themeIcon"></i>
+                </button>
+                <a href="{% url 'logistics:reservation_create' %}" class="btn-primary">
+                    <i class="bi bi-plus-lg"></i> New Reservation
+                </a>
+            </div>
+        </div>
+
+        <div class="page-body">
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-label">
+                    <i class="bi bi-funnel-fill"></i> Filter by status:
+                </div>
+                <div class="filter-pills">
+                    <a href="{% url 'logistics:reservation_list' %}"
+                       class="filter-pill {% if not status_filter %}active{% endif %}">
+                        All
+                    </a>
+                    {% for value, label in status_choices %}
+                    <a href="?status={{ value }}"
+                       class="filter-pill status-{{ value|lower }} {% if status_filter == value %}active{% endif %}">
+                        {{ label }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Table Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="bi bi-calendar2-check-fill"></i> All Reservations</h3>
+                    <span class="card-badge">{{ reservations|length }} total</span>
+                </div>
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Vendor</th>
+                            <th>Dock</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Priority</th>
+                            <th>Elevator</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in reservations %}
+                        <tr>
+                            <td style="color:var(--text-3);font-size:0.78rem;">{{ r.reservation_id }}</td>
+                            <td><span class="vendor-cell">{{ r.vendor.vendor_name }}</span></td>
+                            <td>
+                                <span class="dock-cell">
+                                    <span class="dock-badge">{{ r.dock.dock_name|slice:":1" }}</span>
+                                    {{ r.dock.dock_name }}
+                                </span>
+                            </td>
+                            <td><span class="time-cell">{{ r.start_datetime|date:"M d, g:i A" }}</span></td>
+                            <td><span style="font-size:0.82rem;color:var(--text-2);">{{ r.end_datetime|time:"g:i A" }}</span></td>
+                            <td>
+                                <span class="priority-{{ r.priority|lower }}">
+                                    {% if r.priority == 'High' %}↑{% elif r.priority == 'Medium' %}→{% else %}↓{% endif %}
+                                    {{ r.priority }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if r.requires_elevator %}
+                                    <span style="color:var(--teal);font-size:0.8rem;font-weight:500;">
+                                        <i class="bi bi-check-circle-fill"></i> Required
+                                    </span>
+                                {% else %}
+                                    <span style="color:var(--text-3);font-size:0.8rem;">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="status-badge {{ r.status|lower }}">{{ r.status }}</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{% url 'logistics:reservation_edit' r.pk %}"
+                                       class="action-icon-btn edit" title="Edit">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                    <a href="{% url 'logistics:reservation_delete' r.pk %}"
+                                       class="action-icon-btn delete" title="Delete">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="table-empty">
+                                <i class="bi bi-calendar-x"></i>
+                                <p>No reservations found</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        document.getElementById('themeIcon').className = isDark ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = saved === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    });
+</script>
+{% endblock %}
