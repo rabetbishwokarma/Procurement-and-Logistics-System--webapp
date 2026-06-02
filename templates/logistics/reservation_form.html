@@ -1,6 +1,3 @@
-cd E:\logistics_Project_Prof-Walter
-
-@'
 {% extends "base.html" %}
 {% block title %}{% if reservation %}Edit{% else %}New{% endif %} Reservation - VaultDock{% endblock %}
 {% block content %}
@@ -125,5 +122,3 @@ cd E:\logistics_Project_Prof-Walter
     });
 </script>
 {% endblock %}
-'@ | Out-File -FilePath "templates\logistics\reservation_form.html" -Encoding utf8 -Force
-Write-Host "reservation_form.html fixed!"
