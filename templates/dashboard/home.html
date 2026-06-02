@@ -2,51 +2,12 @@
 {% block title %}Dashboard - Procurement & Logistics System{% endblock %}
 {% block content %}
 <div class="app-layout">
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <div class="sidebar-logo-icon"><i class="bi bi-building-check"></i></div>
-            <div>
-                <div class="sidebar-logo-name">VaultDock</div>
-                <div class="sidebar-logo-tag">Procurement &amp; Logistics</div>
-            </div>
-        </div>
-        <nav class="sidebar-nav">
-            <div class="nav-section-title">Operations</div>
-            <a href="#" class="nav-item active"><i class="bi bi-squares-fill"></i> Dashboard</a>
-            <a href="{% url 'logistics:reservation_list' %}" class="nav-item"><i class="bi bi-calendar2-check-fill"></i> Reservations</a>
-            <a href="#" class="nav-item"><i class="bi bi-truck-front-fill"></i> Deliveries</a>
-            <a href="#" class="nav-item"><i class="bi bi-arrow-up-square-fill"></i> Elevators</a>
-            <a href="#" class="nav-item"><i class="bi bi-p-square-fill"></i> Dock Bays</a>
-            <div class="nav-section-title">Procurement</div>
-            <a href="#" class="nav-item"><i class="bi bi-box-fill"></i> Items</a>
-            <a href="#" class="nav-item"><i class="bi bi-bag-check-fill"></i> Orders</a>
-            <a href="#" class="nav-item"><i class="bi bi-file-earmark-text-fill"></i> Contracts</a>
-            <div class="nav-section-title">Directory</div>
-            <a href="#" class="nav-item"><i class="bi bi-shop-window"></i> Vendors</a>
-            <a href="#" class="nav-item"><i class="bi bi-gear-wide-connected"></i> Manufacturers</a>
-            <div class="nav-section-title">Analytics</div>
-            <a href="#" class="nav-item"><i class="bi bi-bar-chart-fill"></i> Reports</a>
-            <a href="{% url 'admin:index' %}" class="nav-item"><i class="bi bi-shield-lock-fill"></i> Admin</a>
-        </nav>
-        <div class="sidebar-footer">
-            <div class="user-pill">
-                <div class="user-avatar">{{ request.user.username|first|upper }}</div>
-                <div>
-                    <div class="user-name">{{ request.user.username }}</div>
-                    <div class="user-role">Administrator</div>
-                </div>
-            </div>
-            <a href="{% url 'accounts:logout' %}" class="logout-btn">
-                <i class="bi bi-box-arrow-left"></i> Sign out
-            </a>
-        </div>
-    </aside>
-
+    {% include "partials/sidebar.html" %}
     <div class="main-content">
         <div class="topbar">
             <div class="topbar-title">
                 <h1>Loading Dock &amp; Elevator Management System</h1>
-                <p>Procurement &amp; Logistics System &middot; VaultDock</p>
+                <p>Procurement &amp; Logistics System &middot; Cohen Project</p>
             </div>
             <div class="topbar-actions">
                 <button class="btn-ghost" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
@@ -161,7 +122,7 @@
                             <a href="{% url 'logistics:reservation_create' %}" class="dash-action-btn blue">
                                 <i class="bi bi-plus-circle-fill"></i><span>New Reservation</span>
                             </a>
-                            <a href="#" class="dash-action-btn blue">
+                            <a href="{% url 'logistics:delivery_create' %}" class="dash-action-btn blue">
                                 <i class="bi bi-truck-front-fill"></i><span>Schedule Delivery</span>
                             </a>
                         </div>

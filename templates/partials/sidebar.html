@@ -2,27 +2,54 @@
     <div class="sidebar-logo">
         <div class="sidebar-logo-icon"><i class="bi bi-building-check"></i></div>
         <div>
-            <div class="sidebar-logo-name">VaultDock</div>
+            <div class="sidebar-logo-name">Cohen Project</div>
             <div class="sidebar-logo-tag">Procurement &amp; Logistics</div>
         </div>
     </div>
     <nav class="sidebar-nav">
         <div class="nav-section-title">Operations</div>
-        <a href="{% url 'dashboard:home' %}" class="nav-item"><i class="bi bi-squares-fill"></i> Dashboard</a>
-        <a href="{% url 'logistics:reservation_list' %}" class="nav-item"><i class="bi bi-calendar2-check-fill"></i> Reservations</a>
-        <a href="#" class="nav-item"><i class="bi bi-truck-front-fill"></i> Deliveries</a>
-        <a href="#" class="nav-item"><i class="bi bi-arrow-up-square-fill"></i> Elevators</a>
-        <a href="#" class="nav-item"><i class="bi bi-p-square-fill"></i> Dock Bays</a>
+        <a href="{% url 'dashboard:home' %}"
+           class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+            <i class="bi bi-squares-fill"></i> Dashboard
+        </a>
+        <a href="{% url 'logistics:reservation_list' %}"
+           class="nav-item {% if 'reservation' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-calendar2-check-fill"></i> Reservations
+        </a>
+        <a href="{% url 'logistics:delivery_list' %}"
+           class="nav-item {% if 'delivery' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-truck-front-fill"></i> Deliveries
+        </a>
+        <a href="#" class="nav-item {% if 'elevator' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-arrow-up-square-fill"></i> Elevators
+        </a>
+        <a href="#" class="nav-item {% if 'dock' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-p-square-fill"></i> Dock Bays
+        </a>
         <div class="nav-section-title">Procurement</div>
-        <a href="#" class="nav-item"><i class="bi bi-box-fill"></i> Items</a>
-        <a href="#" class="nav-item"><i class="bi bi-bag-check-fill"></i> Orders</a>
-        <a href="#" class="nav-item"><i class="bi bi-file-earmark-text-fill"></i> Contracts</a>
+        <a href="#" class="nav-item {% if 'item' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-box-fill"></i> Items
+        </a>
+        <a href="#" class="nav-item {% if 'order' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-bag-check-fill"></i> Orders
+        </a>
+        <a href="#" class="nav-item {% if 'contract' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-file-earmark-text-fill"></i> Contracts
+        </a>
         <div class="nav-section-title">Directory</div>
-        <a href="#" class="nav-item"><i class="bi bi-shop-window"></i> Vendors</a>
-        <a href="#" class="nav-item"><i class="bi bi-gear-wide-connected"></i> Manufacturers</a>
+        <a href="#" class="nav-item {% if 'vendor' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-shop-window"></i> Vendors
+        </a>
+        <a href="#" class="nav-item {% if 'manufacturer' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-gear-wide-connected"></i> Manufacturers
+        </a>
         <div class="nav-section-title">Analytics</div>
-        <a href="#" class="nav-item"><i class="bi bi-bar-chart-fill"></i> Reports</a>
-        <a href="{% url 'admin:index' %}" class="nav-item"><i class="bi bi-shield-lock-fill"></i> Admin</a>
+        <a href="#" class="nav-item {% if 'report' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-bar-chart-fill"></i> Reports
+        </a>
+        <a href="{% url 'admin:index' %}" class="nav-item">
+            <i class="bi bi-shield-lock-fill"></i> Admin
+        </a>
     </nav>
     <div class="sidebar-footer">
         <div class="user-pill">

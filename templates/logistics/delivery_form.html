@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}{% if delivery %}Edit{% else %}New{% endif %} Delivery - VaultDock{% endblock %}
+{% block content %}
+<div class="app-layout">
+    {% include "partials/sidebar.html" %}
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>{% if delivery %}Edit Delivery #{{ delivery.pk }}{% else %}New Delivery{% endif %}</h1>
+                <p>{% if delivery %}Update delivery details{% else %}Schedule a new FFE delivery{% endif %}</p>
+            </div>
+            <div class="topbar-actions">
+                <a href="{% url 'logistics:delivery_list' %}" class="btn-ghost">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+        <div class="page-body">
+            <div class="form-card">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label><i class="bi bi-box-fill"></i> Item</label>
+                            <select name="item" required>
+                                <option value="">Select item...</option>
+                                {% for i in items %}
+                                <option value="{{ i.item_id }}" {% if delivery and delivery.item_id == i.item_id %}selected{% endif %}>
+                                    {{ i.item_description }} ({{ i.category }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-shop-window"></i> Vendor</label>
+                            <select name="vendor" required>
+                                <option value="">Select vendor...</option>
+                                {% for v in vendors %}
+                                <option value="{{ v.nys_vendor_id }}" {% if delivery and delivery.vendor_id == v.nys_vendor_id %}selected{% endif %}>
+                                    {{ v.vendor_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-calendar2-check-fill"></i> Linked Reservation</label>
+                            <select name="reservation" required>
+                                <option value="">Select reservation...</option>
+                                {% for r in reservations %}
+                                <option value="{{ r.reservation_id }}" {% if delivery and delivery.reservation_id == r.reservation_id %}selected{% endif %}>
+                                    #{{ r.reservation_id }} - {{ r.vendor.vendor_name }} - {{ r.start_datetime|date:"M d, Y" }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-calendar-date-fill"></i> Required On Site Date</label>
+                            <input type="date" name="required_on_site_date" required
+                                value="{% if delivery %}{{ delivery.required_on_site_date|date:'Y-m-d' }}{% endif %}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-toggle-on"></i> Delivery Status</label>
+                            <select name="delivery_status" required>
+                                {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if delivery and delivery.delivery_status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-currency-dollar"></i> Total Installed Cost</label>
+                            <input type="number" name="total_installed_cost" step="0.01" placeholder="0.00"
+                                value="{% if delivery %}{{ delivery.total_installed_cost }}{% endif %}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-graph-up-arrow"></i> Variance</label>
+                            <input type="number" name="variance" step="0.01" placeholder="0.00"
+                                value="{% if delivery %}{{ delivery.variance }}{% endif %}">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <a href="{% url 'logistics:delivery_list' %}" class="btn-ghost">Cancel</a>
+                        <button type="submit" class="btn-primary">
+                            <i class="bi bi-check-lg"></i>
+                            {% if delivery %}Update Delivery{% else %}Create Delivery{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+</script>
+{% endblock %}
