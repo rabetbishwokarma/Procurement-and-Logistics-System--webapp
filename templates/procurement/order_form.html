@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}New Order - VaultDock{% endblock %}
+{% block content %}
+<div class="app-layout">
+    {% include "partials/sidebar.html" %}
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>New Order</h1>
+                <p>Create a new procurement order — saves directly to database</p>
+            </div>
+            <div class="topbar-actions">
+                <a href="{% url 'procurement:order_list' %}" class="btn-ghost">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+        <div class="page-body">
+            <div class="form-card">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label><i class="bi bi-box-fill"></i> Item</label>
+                            <select name="item" required>
+                                <option value="">Select item...</option>
+                                {% for i in items %}
+                                <option value="{{ i.item_id }}">{{ i.item_description }} ({{ i.category }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-shop-window"></i> Vendor</label>
+                            <select name="vendor" required>
+                                <option value="">Select vendor...</option>
+                                {% for v in vendors %}
+                                <option value="{{ v.nys_vendor_id }}">{{ v.vendor_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-hash"></i> Quantity</label>
+                            <input type="number" name="quantity" min="1" required placeholder="e.g. 10">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-calendar-fill"></i> Fiscal Year</label>
+                            <input type="number" name="fiscal_year" placeholder="e.g. 2026" value="2026">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-currency-dollar"></i> Quote Amount</label>
+                            <input type="number" name="quote_amount" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-tag-fill"></i> List Price</label>
+                            <input type="number" name="list_price" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-percent"></i> Discount (as decimal)</label>
+                            <input type="number" name="discount" step="0.0001" placeholder="e.g. 0.15 for 15%">
+                        </div>
+                    </div>
+                    <div class="form-section-divider"><span>Order will be saved directly to MySQL database</span></div>
+                    <div class="form-actions">
+                        <a href="{% url 'procurement:order_list' %}" class="btn-ghost">Cancel</a>
+                        <button type="submit" class="btn-primary">
+                            <i class="bi bi-check-lg"></i> Submit Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>const saved = localStorage.getItem('theme') || 'light'; document.documentElement.setAttribute('data-theme', saved);</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}{% if vendor %}Edit{% else %}Add{% endif %} Vendor - VaultDock{% endblock %}
+{% block content %}
+<div class="app-layout">
+    {% include "partials/sidebar.html" %}
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>{% if vendor %}Edit Vendor{% else %}Add New Vendor{% endif %}</h1>
+                <p>{% if vendor %}Update vendor details{% else %}Add a new vendor to the system{% endif %}</p>
+            </div>
+            <div class="topbar-actions">
+                <a href="{% url 'vendors:vendor_list' %}" class="btn-ghost">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+        <div class="page-body">
+            <div class="form-card">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-grid-2">
+                        {% if not vendor %}
+                        <div class="form-group">
+                            <label><i class="bi bi-hash"></i> NYS Vendor ID</label>
+                            <input type="number" name="nys_vendor_id" required placeholder="e.g. 1006">
+                        </div>
+                        {% endif %}
+                        <div class="form-group">
+                            <label><i class="bi bi-shop-window"></i> Vendor Name</label>
+                            <input type="text" name="vendor_name" required placeholder="Company name"
+                                value="{% if vendor %}{{ vendor.vendor_name }}{% endif %}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-briefcase-fill"></i> Business Type</label>
+                            <select name="business_type">
+                                <option value="">Select type...</option>
+                                {% for t in "MBE,WBE,WOSB,SB,Corporate,Other"|split:"," %}
+                                <option value="{{ t }}" {% if vendor and vendor.business_type == t %}selected{% endif %}>{{ t }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-person-fill"></i> Contact Name</label>
+                            <input type="text" name="contact_name" placeholder="Primary contact"
+                                value="{% if vendor %}{{ vendor.contact_name }}{% endif %}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-telephone-fill"></i> Phone</label>
+                            <input type="text" name="phone" placeholder="e.g. 2125551234"
+                                value="{% if vendor %}{{ vendor.phone }}{% endif %}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-envelope-fill"></i> Email</label>
+                            <input type="email" name="email" placeholder="vendor@email.com"
+                                value="{% if vendor %}{{ vendor.email }}{% endif %}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-toggle-on"></i> Approved Status</label>
+                            <select name="approved_status">
+                                <option value="Yes" {% if vendor and vendor.approved_status == 'Yes' %}selected{% endif %}>Yes</option>
+                                <option value="Pending" {% if vendor and vendor.approved_status == 'Pending' %}selected{% endif %}>Pending</option>
+                                <option value="No" {% if vendor and vendor.approved_status == 'No' %}selected{% endif %}>No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <a href="{% url 'vendors:vendor_list' %}" class="btn-ghost">Cancel</a>
+                        <button type="submit" class="btn-primary">
+                            <i class="bi bi-check-lg"></i>
+                            {% if vendor %}Update Vendor{% else %}Add Vendor{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>const saved = localStorage.getItem('theme') || 'light'; document.documentElement.setAttribute('data-theme', saved);</script>
+{% endblock %}

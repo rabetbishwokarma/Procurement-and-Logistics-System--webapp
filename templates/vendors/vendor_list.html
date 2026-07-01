@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Vendors - VaultDock{% endblock %}
+{% block content %}
+<div class="app-layout">
+    {% include "partials/sidebar.html" %}
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>Vendors</h1>
+                <p>Manage approved vendors and suppliers</p>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn-ghost" id="themeToggle" onclick="toggleTheme()">
+                    <i class="bi bi-moon-fill" id="themeIcon"></i>
+                </button>
+                <a href="{% url 'vendors:vendor_create' %}" class="btn-primary">
+                    <i class="bi bi-plus-lg"></i> Add Vendor
+                </a>
+            </div>
+        </div>
+        <div class="page-body">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="bi bi-shop-window"></i> All Vendors</h3>
+                    <span class="card-badge">{{ vendors|length }} total</span>
+                </div>
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Vendor Name</th>
+                            <th>Business Type</th>
+                            <th>Contact</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for v in vendors %}
+                        <tr>
+                            <td style="color:var(--text-3);font-size:0.78rem;font-weight:600;">{{ v.nys_vendor_id }}</td>
+                            <td><span class="vendor-cell">{{ v.vendor_name }}</span></td>
+                            <td>
+                                <span style="font-size:0.78rem;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--blue-light);color:var(--blue);">
+                                    {{ v.business_type }}
+                                </span>
+                            </td>
+                            <td style="font-size:0.845rem;color:var(--text-2);">{{ v.contact_name }}</td>
+                            <td style="font-size:0.82rem;color:var(--text-2);">{{ v.phone }}</td>
+                            <td style="font-size:0.82rem;color:var(--text-2);">{{ v.email }}</td>
+                            <td>
+                                {% if v.approved_status == 'Yes' %}
+                                <span class="status-badge completed">Approved</span>
+                                {% else %}
+                                <span class="status-badge pending">{{ v.approved_status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{% url 'vendors:vendor_edit' v.pk %}" class="action-icon-btn edit"><i class="bi bi-pencil-fill"></i></a>
+                                    <a href="{% url 'vendors:vendor_delete' v.pk %}" class="action-icon-btn delete"><i class="bi bi-trash-fill"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="table-empty">
+                                <i class="bi bi-shop"></i>
+                                <p>No vendors found</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        document.getElementById('themeIcon').className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = saved === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    });
+</script>
+{% endblock %}

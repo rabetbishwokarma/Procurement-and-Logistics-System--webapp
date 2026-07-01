@@ -20,31 +20,38 @@
            class="nav-item {% if 'delivery' in request.resolver_match.url_name %}active{% endif %}">
             <i class="bi bi-truck-front-fill"></i> Deliveries
         </a>
-        <a href="#" class="nav-item {% if 'elevator' in request.resolver_match.url_name %}active{% endif %}">
+        <a href="{% url 'logistics:elevator_list' %}"
+           class="nav-item {% if 'elevator' in request.resolver_match.url_name %}active{% endif %}">
             <i class="bi bi-arrow-up-square-fill"></i> Elevators
         </a>
-        <a href="#" class="nav-item {% if 'dock' in request.resolver_match.url_name %}active{% endif %}">
-            <i class="bi bi-p-square-fill"></i> Dock Bays
+        <a href="{% url 'logistics:alert_list' %}"
+           class="nav-item {% if 'alert' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-bell-fill"></i> Alerts
         </a>
         <div class="nav-section-title">Procurement</div>
-        <a href="#" class="nav-item {% if 'item' in request.resolver_match.url_name %}active{% endif %}">
+        <a href="{% url 'procurement:item_list' %}"
+           class="nav-item {% if 'item' in request.resolver_match.url_name %}active{% endif %}">
             <i class="bi bi-box-fill"></i> Items
         </a>
-        <a href="#" class="nav-item {% if 'order' in request.resolver_match.url_name %}active{% endif %}">
+        <a href="{% url 'procurement:order_list' %}"
+           class="nav-item {% if 'order' in request.resolver_match.url_name %}active{% endif %}">
             <i class="bi bi-bag-check-fill"></i> Orders
         </a>
-        <a href="#" class="nav-item {% if 'contract' in request.resolver_match.url_name %}active{% endif %}">
+        <a href="{% url 'procurement:contract_list' %}"
+           class="nav-item {% if 'contract' in request.resolver_match.url_name %}active{% endif %}">
             <i class="bi bi-file-earmark-text-fill"></i> Contracts
         </a>
         <div class="nav-section-title">Directory</div>
-        <a href="#" class="nav-item {% if 'vendor' in request.resolver_match.url_name %}active{% endif %}">
+        <a href="{% url 'vendors:vendor_list' %}"
+           class="nav-item {% if 'vendor' in request.resolver_match.url_name %}active{% endif %}">
             <i class="bi bi-shop-window"></i> Vendors
         </a>
-        <a href="#" class="nav-item {% if 'manufacturer' in request.resolver_match.url_name %}active{% endif %}">
+        <a href="#"
+           class="nav-item {% if 'manufacturer' in request.resolver_match.url_name %}active{% endif %}">
             <i class="bi bi-gear-wide-connected"></i> Manufacturers
         </a>
         <div class="nav-section-title">Analytics</div>
-        <a href="#" class="nav-item {% if 'report' in request.resolver_match.url_name %}active{% endif %}">
+        <a href="#" class="nav-item">
             <i class="bi bi-bar-chart-fill"></i> Reports
         </a>
         <a href="{% url 'admin:index' %}" class="nav-item">

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Items - VaultDock{% endblock %}
+{% block content %}
+<div class="app-layout">
+    {% include "partials/sidebar.html" %}
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>Items</h1>
+                <p>Procurement item catalog</p>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn-ghost" id="themeToggle" onclick="toggleTheme()">
+                    <i class="bi bi-moon-fill" id="themeIcon"></i>
+                </button>
+            </div>
+        </div>
+        <div class="page-body">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="bi bi-box-fill"></i> All Items</h3>
+                    <span class="card-badge">{{ items|length }} total</span>
+                </div>
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Manufacturer</th>
+                            <th>Contract</th>
+                            <th>Model</th>
+                            <th>Size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in items %}
+                        <tr>
+                            <td style="color:var(--text-3);font-size:0.78rem;font-weight:600;">{{ i.item_id }}</td>
+                            <td><span style="font-weight:600;color:var(--text-1);">{{ i.item_description }}</span></td>
+                            <td>
+                                <span style="font-size:0.78rem;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--teal-light);color:var(--teal);">
+                                    {{ i.category }}
+                                </span>
+                            </td>
+                            <td style="font-size:0.845rem;color:var(--text-2);">{{ i.manufacturer.manufacturer_name }}</td>
+                            <td style="font-size:0.82rem;color:var(--text-2);">{{ i.contract.contract_name }}</td>
+                            <td style="font-size:0.82rem;color:var(--text-2);">{{ i.model }}</td>
+                            <td style="font-size:0.82rem;color:var(--text-2);">{{ i.finish_size }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="table-empty">
+                                <i class="bi bi-box"></i>
+                                <p>No items found</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        document.getElementById('themeIcon').className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = saved === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    });
+</script>
+{% endblock %}

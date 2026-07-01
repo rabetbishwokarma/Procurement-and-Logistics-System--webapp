@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Contracts - VaultDock{% endblock %}
+{% block content %}
+<div class="app-layout">
+    {% include "partials/sidebar.html" %}
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>Contracts</h1>
+                <p>Procurement contracts and agreements</p>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn-ghost" id="themeToggle" onclick="toggleTheme()">
+                    <i class="bi bi-moon-fill" id="themeIcon"></i>
+                </button>
+            </div>
+        </div>
+        <div class="page-body">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="bi bi-file-earmark-text-fill"></i> All Contracts</h3>
+                    <span class="card-badge">{{ contracts|length }} total</span>
+                </div>
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Contract Name</th>
+                            <th>Manufacturer</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Warranty</th>
+                            <th>Comments</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in contracts %}
+                        <tr>
+                            <td style="color:var(--text-3);font-size:0.78rem;font-weight:600;">{{ c.contract_id }}</td>
+                            <td><span style="font-weight:600;color:var(--text-1);">{{ c.contract_name }}</span></td>
+                            <td style="font-size:0.845rem;color:var(--text-2);">{{ c.manufacturer.manufacturer_name }}</td>
+                            <td><span class="time-cell">{{ c.start_date|date:"M d, Y" }}</span></td>
+                            <td><span class="time-cell">{{ c.end_date|date:"M d, Y" }}</span></td>
+                            <td>
+                                <span style="font-size:0.78rem;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--green-light);color:var(--green);">
+                                    {{ c.warranty }}
+                                </span>
+                            </td>
+                            <td style="font-size:0.82rem;color:var(--text-2);">{{ c.comments }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="table-empty">
+                                <i class="bi bi-file-earmark"></i>
+                                <p>No contracts found</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        document.getElementById('themeIcon').className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = saved === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    });
+</script>
+{% endblock %}

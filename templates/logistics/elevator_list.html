@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Elevator Scheduler - VaultDock{% endblock %}
+{% block content %}
+<div class="app-layout">
+    {% include "partials/sidebar.html" %}
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>Elevator Scheduler</h1>
+                <p>Manage freight elevator schedules</p>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn-ghost" id="themeToggle" onclick="toggleTheme()">
+                    <i class="bi bi-moon-fill" id="themeIcon"></i>
+                </button>
+                <a href="{% url 'logistics:elevator_create' %}" class="btn-primary">
+                    <i class="bi bi-plus-lg"></i> New Schedule
+                </a>
+            </div>
+        </div>
+        <div class="page-body">
+            <div class="filter-bar">
+                <div class="filter-label"><i class="bi bi-funnel-fill"></i> Filter by status:</div>
+                <div class="filter-pills">
+                    <a href="{% url 'logistics:elevator_list' %}" class="filter-pill {% if not status_filter %}active{% endif %}">All</a>
+                    {% for value, label in status_choices %}
+                    <a href="?status={{ value }}" class="filter-pill {% if status_filter == value %}active{% endif %}">{{ label }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="bi bi-arrow-up-square-fill"></i> Elevator Schedules</h3>
+                    <span class="card-badge">{{ schedules|length }} total</span>
+                </div>
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Elevator</th>
+                            <th>Reservation</th>
+                            <th>Vendor</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Trips</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in schedules %}
+                        <tr>
+                            <td style="color:var(--text-3);font-size:0.78rem;font-weight:600;">{{ s.elevator_schedule_id }}</td>
+                            <td>
+                                <span style="display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--text-1);">
+                                    <i class="bi bi-arrow-up-square-fill" style="color:var(--teal);"></i>
+                                    {{ s.elevator.elevator_name }}
+                                </span>
+                                <div style="font-size:0.72rem;color:var(--text-3);">{{ s.elevator.building }} &middot; {{ s.elevator.capacity }}</div>
+                            </td>
+                            <td style="font-size:0.82rem;color:var(--text-2);">#{{ s.reservation.reservation_id }}</td>
+                            <td><span class="vendor-cell">{{ s.reservation.vendor.vendor_name }}</span></td>
+                            <td><span class="time-cell">{{ s.start_datetime|date:"M d, g:i A" }}</span></td>
+                            <td style="font-size:0.82rem;color:var(--text-2);">{{ s.end_datetime|time:"g:i A" }}</td>
+                            <td>
+                                <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--blue-light);color:var(--blue);font-size:0.78rem;font-weight:700;">
+                                    {{ s.trip_count }}
+                                </span>
+                            </td>
+                            <td><span class="status-badge {{ s.status|lower }}">{{ s.status }}</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{% url 'logistics:elevator_edit' s.pk %}" class="action-icon-btn edit"><i class="bi bi-pencil-fill"></i></a>
+                                    <a href="{% url 'logistics:elevator_delete' s.pk %}" class="action-icon-btn delete"><i class="bi bi-trash-fill"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="table-empty">
+                                <i class="bi bi-arrow-up-square"></i>
+                                <p>No elevator schedules found</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        document.getElementById('themeIcon').className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = saved === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    });
+</script>
+{% endblock %}

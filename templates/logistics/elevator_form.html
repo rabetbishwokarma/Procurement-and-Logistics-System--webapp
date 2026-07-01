@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}{% if schedule %}Edit{% else %}New{% endif %} Elevator Schedule - VaultDock{% endblock %}
+{% block content %}
+<div class="app-layout">
+    {% include "partials/sidebar.html" %}
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1>{% if schedule %}Edit Schedule #{{ schedule.pk }}{% else %}New Elevator Schedule{% endif %}</h1>
+                <p>{% if schedule %}Update elevator schedule{% else %}Schedule a freight elevator{% endif %}</p>
+            </div>
+            <div class="topbar-actions">
+                <a href="{% url 'logistics:elevator_list' %}" class="btn-ghost">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+        <div class="page-body">
+            <div class="form-card">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label><i class="bi bi-calendar2-check-fill"></i> Linked Reservation</label>
+                            <select name="reservation" required>
+                                <option value="">Select reservation...</option>
+                                {% for r in reservations %}
+                                <option value="{{ r.reservation_id }}" {% if schedule and schedule.reservation_id == r.reservation_id %}selected{% endif %}>
+                                    #{{ r.reservation_id }} - {{ r.vendor.vendor_name }} - {{ r.start_datetime|date:"M d, Y" }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-arrow-up-square-fill"></i> Elevator</label>
+                            <select name="elevator" required>
+                                <option value="">Select elevator...</option>
+                                {% for e in elevators %}
+                                <option value="{{ e.elevator_id }}" {% if schedule and schedule.elevator_id == e.elevator_id %}selected{% endif %}>
+                                    {{ e.elevator_name }} - {{ e.building }} ({{ e.capacity }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-clock-fill"></i> Start Date &amp; Time</label>
+                            <input type="datetime-local" name="start_datetime" required
+                                value="{% if schedule %}{{ schedule.start_datetime|date:'Y-m-d' }}T{{ schedule.start_datetime|time:'H:i' }}{% endif %}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-clock"></i> End Date &amp; Time</label>
+                            <input type="datetime-local" name="end_datetime" required
+                                value="{% if schedule %}{{ schedule.end_datetime|date:'Y-m-d' }}T{{ schedule.end_datetime|time:'H:i' }}{% endif %}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-toggle-on"></i> Status</label>
+                            <select name="status" required>
+                                {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if schedule and schedule.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="bi bi-arrow-repeat"></i> Trip Count</label>
+                            <input type="number" name="trip_count" min="1" placeholder="1"
+                                value="{% if schedule %}{{ schedule.trip_count }}{% else %}1{% endif %}">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <a href="{% url 'logistics:elevator_list' %}" class="btn-ghost">Cancel</a>
+                        <button type="submit" class="btn-primary">
+                            <i class="bi bi-check-lg"></i>
+                            {% if schedule %}Update Schedule{% else %}Create Schedule{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+</script>
+{% endblock %}
